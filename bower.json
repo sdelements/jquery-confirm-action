@@ -1,0 +1,23 @@
+{
+  "name": "jquery-confirm-action",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sdelements/jquery-confirm-action",
+  "authors": [
+    "Houssam Haidar <houssam@sdelements.com>"
+  ],
+  "description": "Click confirmations for the masses <3",
+  "main": "jquery.confirm-action.js",
+  "keywords": [
+    "confirm",
+    "jquery",
+    "click"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
