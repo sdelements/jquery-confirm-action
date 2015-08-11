@@ -2,7 +2,11 @@
 
 ![screenshot](screenshot.png)
 
-## Simple Usage
+## Getting Started
+
+```html
+<script type="text/javascript" src="./jquery.confirm-action.js"></script>
+```
 
 ```javascript
 $('.my-button').confirmAction({
@@ -15,7 +19,7 @@ $('.my-button').confirmAction({
 });
 ```
 
-## Advanced Usage with HTML and Custom Actions
+## Advanced Usage
 
 ```javascript
 $('.my-button').confirmAction({
