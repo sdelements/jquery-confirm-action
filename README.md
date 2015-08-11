@@ -1,5 +1,7 @@
 # jQuery Confirm Action
 
+![screenshot](screenshot.png)
+
 ## Simple Usage
 
 ```javascript
