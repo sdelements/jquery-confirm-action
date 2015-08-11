@@ -14,7 +14,7 @@ $('.my-button').confirmAction({
         text: 'Whoa!'
     },
     message: {
-        html: 'You are about to do a bad thing, are you sure?'
+        text: 'You are about to do a bad thing, are you sure?'
     }
 });
 ```
