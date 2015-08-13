@@ -55,7 +55,8 @@
                 textAlign: 'center',
                 fontSize: '14px',
                 borderRadius: '3px',
-                position: 'relative'
+                position: 'relative',
+                zIndex: 1001
             },
             header: {
                 padding: '30px'
@@ -181,7 +182,8 @@
 
             }, this));
 
-            this.$element = this.components.$base.append(
+            this.$element = this.components.$base.append([
+                this.$overlay,
                 this.components.$dialog.append([
                     this.components.$header.append([
                         this.components.$title,
@@ -190,7 +192,7 @@
                     this.components.$content,
                     this.components.$actions.append($buttons)
                 ])
-            );
+            ]);
 
         },
 
@@ -204,7 +206,7 @@
 
             var confirm = function() {
 
-                $(sourceEvent.target).trigger('click.confirmed');
+                $(sourceEvent.target).trigger('click', true);
 
             };
 
@@ -224,8 +226,6 @@
 
         show: function(sourceEvent) {
 
-            this.$overlay.appendTo('body');
-
             this.$element.appendTo('body');
 
             this.listen(sourceEvent || $.Event('click'));
@@ -233,8 +233,6 @@
         },
 
         close: function() {
-
-            this.$overlay.remove();
 
             this.$element.remove();
 
@@ -268,11 +266,15 @@
 
         },
 
-        intercept: function(e) {
-
-            e.preventDefault();
+        intercept: function(e, confirmed) {
 
             this.modal.show(e);
+
+            if (confirmed !== true) {
+
+                return false;
+
+            }
 
         }
 
@@ -286,7 +288,21 @@
 
         return this.each(function() {
 
+            var message;
+
+            if (typeof options === 'string') {
+
+                message = options;
+
+            }
+
             options = $.extend({}, $.fn.confirmAction.defaults, typeof options === 'object' && options);
+
+            if (message) {
+
+                options.message.text = message;
+
+            }
 
             new ConfirmAction(this, options);
 
@@ -296,7 +312,7 @@
 
     $.fn.confirmAction.defaults = {
         title: {
-            text: 'Confirm',
+            text: 'Warning',
             style: 'danger'
         },
         message: {
