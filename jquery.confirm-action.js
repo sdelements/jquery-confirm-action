@@ -208,6 +208,8 @@
 
                 $(sourceEvent.target).trigger('click', true);
 
+                that.close();
+
             };
 
             this.$element.find('[data-confirm-action-id]').each(function() {
@@ -268,13 +270,34 @@
 
         intercept: function(e, confirmed) {
 
-            this.modal.show(e);
+            var that = this;
 
-            if (confirmed !== true) {
+            var execute = function(run) {
 
-                return false;
+                if (!run) {
+                    return;
+                }
+
+                that.modal.show(e);
+
+                if (confirmed !== true) {
+
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+
+                }
+
+            };
+
+            if (typeof this.options.conditional === 'function') {
+
+                this.options.conditional(execute);
+
+                return;
 
             }
+
+            execute(true);
 
         }
 
