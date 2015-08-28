@@ -80,6 +80,7 @@
                 padding: '10px 40px 60px 40px',
                 color: '#888888',
                 fontSize: '16px',
+                fontWeight: '300',
                 lineHeight: '20px'
             },
             actions: {
@@ -123,6 +124,22 @@
                     borderColor: '#77dd77',
                     color: '#ffffff'
                 }
+            },
+            conditions: {
+                width: '60%',
+                textAlign: 'left',
+                margin: '0 auto',
+                marginTop: '20px'
+            },
+            label: {
+                fontSize: '14px',
+                color: '#aaaaaa',
+                marginTop: '10px',
+                display: 'block'
+            },
+            checkbox: {
+                margin: '0 5px 0 0',
+                verticalAlign: 'baseline'
             }
         },
 
@@ -134,8 +151,12 @@
             title: '<h2 class="confirm-action-modal-title">Confirm</h2>',
             close: '<span class="confirm-action-modal-close" data-confirm-action-close>&times;</span>',
             content: '<div class="confirm-action-modal-content" />',
+            conditions: '<div class="confirm-action-modal-conditions" />',
             actions: '<div class="confirm-action-modal-actions" />',
-            button: '<button class="confirm-action-modal-button">Action</button>'
+            button: '<button class="confirm-action-modal-button">Action</button>',
+            label: '<label class="confirm-action-label" />',
+            checkbox: '<input type="checkbox" />',
+            conditionText: '<span class="confirm-action-condition-text" />'
         },
 
         init: function() {
@@ -165,6 +186,24 @@
             this.options.message.text
                 && this.components.$content.text(this.options.message.text);
 
+            var $conditions = [];
+
+            $.each(this.options.conditions, $.proxy(function(key, condition) {
+
+                var $condition;
+
+                if (condition.type === 'checkbox') {
+                    $condition = this.components.$label.clone()
+                        .append([
+                            this.components.$checkbox.clone(),
+                            this.components.$conditionText.clone().text(condition.text || 'Are you sure?')
+                        ])
+                }
+
+                $conditions.push($condition);
+
+            }, this));
+
             var $buttons = [
                 this.components.$button.clone()
                     .text('Cancel')
@@ -189,7 +228,9 @@
                         this.components.$title,
                         this.components.$close
                     ]),
-                    this.components.$content,
+                    this.components.$content.append(
+                        this.components.$conditions.append($conditions)
+                    ),
                     this.components.$actions.append($buttons)
                 ])
             ]);
@@ -349,7 +390,8 @@
                     confirm();
                 }
             }
-        }
+        },
+        conditions: {}
     };
 
 })(jQuery);
