@@ -153,7 +153,7 @@
             content: '<div class="confirm-action-modal-content" />',
             conditions: '<div class="confirm-action-modal-conditions" />',
             actions: '<div class="confirm-action-modal-actions" />',
-            button: '<button class="confirm-action-modal-button">Action</button>',
+            button: '<button class="confirm-action-modal-button">Confirm</button>',
             label: '<label class="confirm-action-label" />',
             checkbox: '<input type="checkbox" />',
             conditionText: '<span class="confirm-action-condition-text" />'
@@ -195,7 +195,7 @@
                 if (condition.type === 'checkbox') {
                     $condition = this.components.$label.clone()
                         .append([
-                            this.components.$checkbox.clone(),
+                            this.components.$checkbox.clone().attr('data-confirm-condition-id', key),
                             this.components.$conditionText.clone().text(condition.text || 'Are you sure?')
                         ])
                 }
@@ -235,6 +235,8 @@
                 ])
             ]);
 
+            this.update();
+
         },
 
         listen: function(sourceEvent) {
@@ -253,15 +255,75 @@
 
             };
 
+            this.$element.find('[data-confirm-condition-id]').each(function() {
+
+                $(this).on('change.confirm.condition', function(e) {
+
+                    that.update();
+
+                });
+
+            });
+
             this.$element.find('[data-confirm-action-id]').each(function() {
 
                 $(this).on('click.confirm.action', function(e) {
 
                     e.preventDefault();
 
-                    that.options.actions[$(this).data('confirm-action-id')].callback(confirm, $.proxy(that.close, that));
+                    var callback = that.options.actions[$(this).data('confirm-action-id')].callback;
+
+                    if (typeof callback !== 'function') {
+
+                        callback = $.fn.confirmAction.defaults.actions.confirm.callback;
+
+                    }
+
+                    callback(confirm, $.proxy(that.close, that));
 
                 });
+
+            });
+
+        },
+
+        update: function() {
+
+            var that = this;
+
+            $.each(this.options.actions, function(key, action) {
+
+                var disabled = false;
+
+                $.each(action.conditions, function(key, condition) {
+
+                    if (disabled) {
+
+                        return;
+
+                    }
+
+                    if (!that.options.conditions[condition]) {
+
+                        disabled = true;
+                    }
+
+                    if (that.options.conditions[condition].type === 'checkbox') {
+
+                        if (!that.$element.find('[data-confirm-condition-id=' + condition + ']').is(':checked')) {
+
+                            disabled = true;
+
+                        }
+
+                    }
+
+                });
+
+                that.$element.find('[data-confirm-action-id=' + key + ']')
+                    .prop('disabled', disabled)
+                    .css('cursor', disabled ? 'not-allowed' : 'pointer')
+                    .fadeTo(50, disabled ? .5 : 1);
 
             });
 
