@@ -186,10 +186,6 @@
             this.components.$title
                 .css(this.styles.titles[this.options.title.style || 'danger']);
 
-            this.setContent(this.options.title, this.components.$title);
-
-            this.setContent(this.options.message, this.components.$content);
-
             var $conditions = map(this.options.conditions, function(condition, key) {
 
                 if (condition.type === 'checkbox') {
@@ -237,9 +233,14 @@
 
         },
 
+        setTitleAndMessage: function() {
+            this.setContent(this.options.title, this.components.$title);
+            this.setContent(this.options.message, this.components.$content);
+        },
+
         setContent: function(options, container) {
             if (options.html) {
-                var html = options.html;
+                var html = typeof options.html === 'function' ? options.html() : options.html;
                 if ($.isArray(html)) {
                     html = html.join('\n');
                 }
@@ -247,7 +248,8 @@
             }
 
             if (options.text) {
-                container.text(options.text);
+                var text = typeof options.text === 'function' ? options.text() : options.text;
+                container.text(text);
             }
         },
 
@@ -343,6 +345,8 @@
 
         show: function(sourceEvent) {
 
+            this.setTitleAndMessage();
+
             this.$element.appendTo('body');
 
             this.listen(sourceEvent || $.Event('click'));
@@ -433,7 +437,7 @@
             var title;
             var message;
 
-            if (typeof options.title === 'string') {
+            if (typeof options.title === 'string' || typeof options.message === 'function') {
                 title = options.title;
                 delete options.title;
             }
@@ -442,7 +446,7 @@
                 message = options;
             }
 
-            if (typeof options.message === 'string') {
+            if (typeof options.message === 'string' || typeof options.message === 'function') {
                 message = options.message;
                 delete options.message;
             }
