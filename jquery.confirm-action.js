@@ -189,7 +189,7 @@
                         .append([
                             this.components.$checkbox.clone().attr('data-confirm-condition-id', key),
                             this.components.$conditionText.clone().text(condition.text || 'Are you sure?')
-                        ])
+                        ]);
                 }
 
                 $conditions.push($condition);
@@ -263,7 +263,7 @@
 
             this.$element.find('[data-confirm-condition-id]').each(function() {
 
-                $(this).on('change.confirm.condition', function(e) {
+                $(this).on('change.confirm.condition', function() {
 
                     that.update();
 
@@ -297,7 +297,7 @@
 
             var that = this;
 
-            $.each(this.options.actions, function(key, action) {
+            $.each(this.options.actions, function(actionKey, action) {
 
                 var disabled = false;
 
@@ -326,7 +326,7 @@
 
                 });
 
-                that.$element.find('[data-confirm-action-id=' + key + ']')
+                that.$element.find('[data-confirm-action-id=' + actionKey + ']')
                     .prop('disabled', disabled)
                     .css('cursor', disabled ? 'not-allowed' : 'pointer')
                     .fadeTo(50, disabled ? .5 : 1);
