@@ -174,17 +174,9 @@
             this.components.$title
                 .css(this.styles.titles[this.options.title.style || 'danger']);
 
-            this.options.title.html
-                && this.components.$title.html(this.options.title.html);
+            this.setContent(this.options.title, this.components.$title);
 
-            this.options.title.text
-                && this.components.$title.text(this.options.title.text);
-
-            this.options.message.html
-                && this.components.$content.html(this.options.message.html);
-
-            this.options.message.text
-                && this.components.$content.text(this.options.message.text);
+            this.setContent(this.options.message, this.components.$content);
 
             var $conditions = [];
 
@@ -237,6 +229,20 @@
 
             this.update();
 
+        },
+
+        setContent: function(options, container) {
+            if (options.html) {
+                var html = options.html;
+                if ($.isArray(html)) {
+                    html = html.join('\n');
+                }
+                container.html(html);
+            }
+
+            if (options.text) {
+                container.text(options.text);
+            }
         },
 
         listen: function(sourceEvent) {
