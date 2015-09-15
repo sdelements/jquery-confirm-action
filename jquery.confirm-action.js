@@ -430,25 +430,34 @@
     $.fn.confirmAction = function(options) {
 
         return this.each(function() {
-
+            var title;
             var message;
 
+            if (typeof options.title === 'string') {
+                title = options.title;
+                delete options.title;
+            }
+
             if (typeof options === 'string') {
-
                 message = options;
+            }
 
+            if (typeof options.message === 'string') {
+                message = options.message;
+                delete options.message;
             }
 
             options = $.extend({}, $.fn.confirmAction.defaults, typeof options === 'object' && options);
 
+            if (title) {
+                options.title.text = message;
+            }
+
             if (message) {
-
                 options.message.text = message;
-
             }
 
             new ConfirmAction(this, options);
-
         });
 
     };
