@@ -295,7 +295,7 @@
 
                 var disabled = false;
 
-                $.each(action.conditions, function(key, condition) {
+                $.each(action.conditions || [], function(key, condition) {
 
                     if (disabled) {
 
