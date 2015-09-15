@@ -345,8 +345,13 @@
 
         close: function() {
 
+            this.resetConditions();
             this.$element.remove();
 
+        },
+
+        resetConditions: function() {
+            this.components.$conditions.find('input[type=checkbox]').prop('checked', false);
         }
 
     };
