@@ -11,6 +11,18 @@
 (function($) {
 
     //
+    // Helpers
+    //
+
+    var each = function(iterable, callback, context) {
+        $.each(iterable, context ? $.proxy(callback, context) : callback);
+    };
+
+    var map = function(iterable, callback, context) {
+        return $.map(iterable, context ? $.proxy(callback, context) : callback);
+    };
+
+    //
     // Modal
     //
 
@@ -163,11 +175,11 @@
 
             this.components = {};
 
-            $.each(this.html, $.proxy(function(key, html) {
+            each(this.html, function(key, html) {
 
                 this.components['$' + key] = $(html).css(this.styles[key] || {});
 
-            }, this));
+            }, this);
 
             this.$overlay = this.components.$overlay.fadeTo(0, 0.5);
 
@@ -178,23 +190,17 @@
 
             this.setContent(this.options.message, this.components.$content);
 
-            var $conditions = [];
-
-            $.each(this.options.conditions, $.proxy(function(key, condition) {
-
-                var $condition;
+            var $conditions = map(this.options.conditions, function(condition, key) {
 
                 if (condition.type === 'checkbox') {
-                    $condition = this.components.$label.clone()
+                    return this.components.$label.clone()
                         .append([
                             this.components.$checkbox.clone().attr('data-confirm-condition-id', key),
                             this.components.$conditionText.clone().text(condition.text || 'Are you sure?')
                         ]);
                 }
 
-                $conditions.push($condition);
-
-            }, this));
+            }, this);
 
             var $buttons = [
                 this.components.$button.clone()
@@ -202,7 +208,7 @@
                     .attr('data-confirm-action-close', true)
             ];
 
-            $.each(this.options.actions, $.proxy(function(key, action) {
+            each(this.options.actions, function(key, action) {
 
                 $buttons.push(
                     this.components.$button.clone()
@@ -211,7 +217,7 @@
                         .css(this.styles.buttons[action.style || 'danger'])
                 );
 
-            }, this));
+            }, this);
 
             this.$element = this.components.$base.append([
                 this.$overlay,
@@ -297,11 +303,11 @@
 
             var that = this;
 
-            $.each(this.options.actions, function(actionKey, action) {
+            each(this.options.actions, function(actionKey, action) {
 
                 var disabled = false;
 
-                $.each(action.conditions || [], function(key, condition) {
+                each(action.conditions || [], function(key, condition) {
 
                     if (disabled) {
 
