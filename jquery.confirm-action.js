@@ -11,6 +11,18 @@
 (function($) {
 
     //
+    // Helpers
+    //
+
+    var each = function(iterable, callback, context) {
+        $.each(iterable, context ? $.proxy(callback, context) : callback);
+    };
+
+    var map = function(iterable, callback, context) {
+        return $.map(iterable, context ? $.proxy(callback, context) : callback);
+    };
+
+    //
     // Modal
     //
 
@@ -163,46 +175,28 @@
 
             this.components = {};
 
-            $.each(this.html, $.proxy(function(key, html) {
+            each(this.html, function(key, html) {
 
                 this.components['$' + key] = $(html).css(this.styles[key] || {});
 
-            }, this));
+            }, this);
 
             this.$overlay = this.components.$overlay.fadeTo(0, 0.5);
 
             this.components.$title
                 .css(this.styles.titles[this.options.title.style || 'danger']);
 
-            this.options.title.html
-                && this.components.$title.html(this.options.title.html);
-
-            this.options.title.text
-                && this.components.$title.text(this.options.title.text);
-
-            this.options.message.html
-                && this.components.$content.html(this.options.message.html);
-
-            this.options.message.text
-                && this.components.$content.text(this.options.message.text);
-
-            var $conditions = [];
-
-            $.each(this.options.conditions, $.proxy(function(key, condition) {
-
-                var $condition;
+            var $conditions = map(this.options.conditions, function(condition, key) {
 
                 if (condition.type === 'checkbox') {
-                    $condition = this.components.$label.clone()
+                    return this.components.$label.clone()
                         .append([
                             this.components.$checkbox.clone().attr('data-confirm-condition-id', key),
                             this.components.$conditionText.clone().text(condition.text || 'Are you sure?')
-                        ])
+                        ]);
                 }
 
-                $conditions.push($condition);
-
-            }, this));
+            }, this);
 
             var $buttons = [
                 this.components.$button.clone()
@@ -210,7 +204,7 @@
                     .attr('data-confirm-action-close', true)
             ];
 
-            $.each(this.options.actions, $.proxy(function(key, action) {
+            each(this.options.actions, function(key, action) {
 
                 $buttons.push(
                     this.components.$button.clone()
@@ -219,7 +213,7 @@
                         .css(this.styles.buttons[action.style || 'danger'])
                 );
 
-            }, this));
+            }, this);
 
             this.$element = this.components.$base.append([
                 this.$overlay,
@@ -237,6 +231,26 @@
 
             this.update();
 
+        },
+
+        setTitleAndMessage: function() {
+            this.setContent(this.options.title, this.components.$title);
+            this.setContent(this.options.message, this.components.$content);
+        },
+
+        setContent: function(options, container) {
+            if (options.html) {
+                var html = typeof options.html === 'function' ? options.html() : options.html;
+                if ($.isArray(html)) {
+                    html = html.join('\n');
+                }
+                container.html(html);
+            }
+
+            if (options.text) {
+                var text = typeof options.text === 'function' ? options.text() : options.text;
+                container.text(text);
+            }
         },
 
         listen: function(sourceEvent) {
@@ -257,7 +271,7 @@
 
             this.$element.find('[data-confirm-condition-id]').each(function() {
 
-                $(this).on('change.confirm.condition', function(e) {
+                $(this).on('change.confirm.condition', function() {
 
                     that.update();
 
@@ -291,11 +305,11 @@
 
             var that = this;
 
-            $.each(this.options.actions, function(key, action) {
+            each(this.options.actions, function(actionKey, action) {
 
                 var disabled = false;
 
-                $.each(action.conditions, function(key, condition) {
+                each(action.conditions || [], function(key, condition) {
 
                     if (disabled) {
 
@@ -320,7 +334,7 @@
 
                 });
 
-                that.$element.find('[data-confirm-action-id=' + key + ']')
+                that.$element.find('[data-confirm-action-id=' + actionKey + ']')
                     .prop('disabled', disabled)
                     .css('cursor', disabled ? 'not-allowed' : 'pointer')
                     .fadeTo(50, disabled ? .5 : 1);
@@ -331,6 +345,8 @@
 
         show: function(sourceEvent) {
 
+            this.setTitleAndMessage();
+
             this.$element.appendTo('body');
 
             this.listen(sourceEvent || $.Event('click'));
@@ -339,8 +355,13 @@
 
         close: function() {
 
+            this.resetConditions();
             this.$element.remove();
 
+        },
+
+        resetConditions: function() {
+            this.components.$conditions.find('input[type=checkbox]').prop('checked', false);
         }
 
     };
@@ -413,25 +434,34 @@
     $.fn.confirmAction = function(options) {
 
         return this.each(function() {
-
+            var title;
             var message;
 
+            if (typeof options.title === 'string' || typeof options.message === 'function') {
+                title = options.title;
+                delete options.title;
+            }
+
             if (typeof options === 'string') {
-
                 message = options;
+            }
 
+            if (typeof options.message === 'string' || typeof options.message === 'function') {
+                message = options.message;
+                delete options.message;
             }
 
             options = $.extend({}, $.fn.confirmAction.defaults, typeof options === 'object' && options);
 
+            if (title) {
+                options.title.text = message;
+            }
+
             if (message) {
-
                 options.message.text = message;
-
             }
 
             new ConfirmAction(this, options);
-
         });
 
     };

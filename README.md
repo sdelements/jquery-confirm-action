@@ -27,7 +27,7 @@ $('.my-button').confirmAction({
         html: [
             '<i class="fa fa-warning"></i><br />',
             'Stop right there!'
-        ].join('\n'),
+        ],
         style: 'danger'
     },
     message: {
