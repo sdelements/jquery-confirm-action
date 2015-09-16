@@ -236,6 +236,7 @@
         setTitleAndMessage: function() {
             this.setContent(this.options.title, this.components.$title);
             this.setContent(this.options.message, this.components.$content);
+            this.components.$content.append(this.components.$conditions);
         },
 
         setContent: function(options, container) {
