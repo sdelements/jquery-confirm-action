@@ -163,6 +163,7 @@
             title: '<h2 class="confirm-action-modal-title">Confirm</h2>',
             close: '<span class="confirm-action-modal-close" data-confirm-action-close>&times;</span>',
             content: '<div class="confirm-action-modal-content" />',
+            message: '<div class="confirm-action-modal-message" />',
             conditions: '<div class="confirm-action-modal-conditions" />',
             actions: '<div class="confirm-action-modal-actions" />',
             button: '<button class="confirm-action-modal-button">Confirm</button>',
@@ -222,9 +223,10 @@
                         this.components.$title,
                         this.components.$close
                     ]),
-                    this.components.$content.append(
+                    this.components.$content.append([
+                        this.components.$message,
                         this.components.$conditions.append($conditions)
-                    ),
+                    ]),
                     this.components.$actions.append($buttons)
                 ])
             ]);
@@ -235,8 +237,7 @@
 
         setTitleAndMessage: function() {
             this.setContent(this.options.title, this.components.$title);
-            this.setContent(this.options.message, this.components.$content);
-            this.components.$content.append(this.components.$conditions);
+            this.setContent(this.options.message, this.components.$message);
         },
 
         setContent: function(options, container) {
