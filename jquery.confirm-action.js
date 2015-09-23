@@ -358,6 +358,7 @@
         close: function() {
 
             this.resetConditions();
+            this.update();
             this.$element.remove();
 
         },
