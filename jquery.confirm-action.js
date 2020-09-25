@@ -210,6 +210,7 @@
                 $buttons.push(
                     this.components.$button.clone()
                         .attr('data-confirm-action-id', key)
+                        .attr('data-cy', action['data-cy'])
                         .text(action.text)
                         .css(this.styles.buttons[action.style || 'danger'])
                 );
